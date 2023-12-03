@@ -25,12 +25,18 @@ public class Bow : MonoBehaviour
     {
         if (Vector3.Distance(RightHand.transform.position, PullPoint.position) < 0.1f && SteamVR_Input.GetState("default", "GrabGrip", handType))
         {
-            PullPoint.position =new Vector3(PullPoint.position.x, PullPoint.position.y, RightHand.transform.position.z) /*new Vector3(RightHand.transform.position.z)*/;
+            PullPoint.position = new Vector3(PullPoint.position.x, PullPoint.position.y, RightHand.transform.position.z) /*new Vector3(RightHand.transform.position.z)*/;
         }
-        float distance = Vector3.Distance(PullPoint.position, attachedArrow.position); // 1
-        b=Mathf.Max(0, distance * blendMultiplier);
-       b = Mathf.Clamp(b,0, 100);
-        BowSkinnedMesh.SetBlendShapeWeight(0,b); // 2
+        //float distance = Vector3.Distance(PullPoint.position, attachedArrow.position); // 1
+
+        Vector3 relativePos = PullPoint.InverseTransformPoint(attachedArrow.position) * attachedArrow.localScale.x;
+        Vector3 forward = transform.position - PullPoint.position;
+        float distance = Mathf.Abs(relativePos.z);
+        b = Mathf.Max(0, distance * blendMultiplier);
+        b = Mathf.Clamp(b, 0, 100);
+        BowSkinnedMesh.SetBlendShapeWeight(0, b); // 2
+        BowSkinnedMesh.gameObject.transform.up = forward;
+        PullPoint.forward = forward;
     }
-   
+
 }
